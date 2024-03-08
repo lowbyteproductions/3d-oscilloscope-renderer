@@ -26,6 +26,8 @@ LDSCRIPT = linkerscript.ld
 LDLIBS		+= -l$(LIBNAME)
 LDFLAGS		+= -L$(OPENCM3_DIR)/lib
 
+LDLIBS 		+= -lm
+
 ###############################################################################
 # Includes
 
