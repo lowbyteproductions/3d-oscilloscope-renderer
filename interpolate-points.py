@@ -25,6 +25,12 @@ def interpolate(a, in_between_points = 100):
             out.append([x, y])
     return out
 
+def oversample(a, factor=5):
+    out = []
+    for p in a:
+        out += [p] * factor
+    return out
+
 def print_signal_array(a, name, type_name="float"):
     out = f"#define {name.upper()}_LENGTH   ({len(a)})\n"
     out += f"{type_name} {name}[{name.upper()}_LENGTH] = {{\n    "
@@ -50,8 +56,8 @@ def plot_signal(signal):
 
 
 
-interpolation_points = 15
-max_scale = 256-1
+interpolation_points = 20
+oversampled_points = 20
 
 points = [
     [2, 7],
@@ -74,6 +80,7 @@ points = [
     [5, 7],
 ]
 
+points = oversample(points, oversampled_points)
 points = interpolate(points, interpolation_points)
 
 norm_max = 0
@@ -81,16 +88,13 @@ for (p,) in zip(points):
     norm_max = max(abs(p[0]), abs(p[1]), norm_max)
 
 normed = normalize(points, norm_max)
-scaled = scale(normed, max_scale)
-xs = list(map(lambda p: int(p[0] + 0.5), scaled))
-ys = list(map(lambda p: int(p[1]+ 0.5), scaled))
+xs = list(map(lambda p: (p[0] * 2) - 1, normed))
+ys = list(map(lambda p: (p[1] * 2) - 1, normed))
 
 # rate = len(xs)
 # plot_fft(xs, rate)
 # plot_signal(xs * 3)
 
 print(f"#define NUM_POINTS ({len(xs)})")
-print_signal_array(xs, "xs", "uint8_t")
-print_signal_array(ys, "ys", "uint8_t")
 print_signal_array(xs, "xs", "float")
 print_signal_array(ys, "ys", "float")
